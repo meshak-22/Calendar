@@ -5,6 +5,8 @@ const months = [
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
+let selectedMonth = currentDate.getMonth();
+let selectedYear = currentYear;
 
 // Populate months
 const monthSelect = document.getElementById('month');
@@ -25,8 +27,8 @@ for (let i = currentYear - 10; i <= currentYear + 10; i++) {
 }
 
 // Set current month and year as default
-monthSelect.value = currentDate.getMonth();
-yearSelect.value = currentYear;
+monthSelect.value = selectedMonth;
+yearSelect.value = selectedYear;
 
 function generateCalendar(month, year) {
     const calendarBody = document.getElementById('calendar');
@@ -48,6 +50,7 @@ function generateCalendar(month, year) {
     // Add empty days before first day
     for (let i = 0; i < firstDay; i++) {
         const emptyDay = document.createElement('div');
+        emptyDay.className = 'empty-day';
         calendarBody.appendChild(emptyDay);
     }
 
@@ -69,13 +72,38 @@ function generateCalendar(month, year) {
 }
 
 // Initial calendar generation
-generateCalendar(currentDate.getMonth(), currentYear);
+generateCalendar(selectedMonth, selectedYear);
 
 // Update calendar when selection changes
 monthSelect.addEventListener('change', () => {
-    generateCalendar(parseInt(monthSelect.value), parseInt(yearSelect.value));
+    selectedMonth = parseInt(monthSelect.value);
+    generateCalendar(selectedMonth, parseInt(yearSelect.value));
 });
 
 yearSelect.addEventListener('change', () => {
-    generateCalendar(parseInt(monthSelect.value), parseInt(yearSelect.value));
+    selectedYear = parseInt(yearSelect.value);
+    generateCalendar(parseInt(monthSelect.value), selectedYear);
+});
+
+// Navigation buttons
+document.getElementById('prev-month').addEventListener('click', () => {
+    selectedMonth--;
+    if (selectedMonth < 0) {
+        selectedMonth = 11;
+        selectedYear--;
+    }
+    monthSelect.value = selectedMonth;
+    yearSelect.value = selectedYear;
+    generateCalendar(selectedMonth, selectedYear);
+});
+
+document.getElementById('next-month').addEventListener('click', () => {
+    selectedMonth++;
+    if (selectedMonth > 11) {
+        selectedMonth = 0;
+        selectedYear++;
+    }
+    monthSelect.value = selectedMonth;
+    yearSelect.value = selectedYear;
+    generateCalendar(selectedMonth, selectedYear);
 });
