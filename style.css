@@ -6,9 +6,9 @@ body {
     align-items: center;
     min-height: 100vh;
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    animation: gradientBG 10s ease infinite;
 }
 
 @keyframes gradientBG {
@@ -18,32 +18,62 @@ body {
 }
 
 .calendar-container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    transition: transform 0.3s ease;
+}
+
+.calendar-container:hover {
+    transform: scale(1.02);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .calendar-header {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+button {
+    background: #4681f4;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #3567c9;
 }
 
 select {
     padding: 8px;
-    border: none;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: #f9f9f9;
+    color: #333;
     font-size: 16px;
     cursor: pointer;
-    margin: 0 5px;
+    margin: 0 10px;
 }
 
 select option {
-    color: black;
+    color: #333;
 }
 
 .calendar-body {
@@ -54,25 +84,33 @@ select option {
 
 .day-name {
     text-align: center;
-    color: white;
+    color: #666;
     font-weight: bold;
     padding: 10px 0;
+    background: #e6f0fa;
+    border-radius: 5px;
 }
 
 .day {
     text-align: center;
     padding: 10px;
-    color: white;
+    color: #333;
     cursor: pointer;
     transition: all 0.3s ease;
+    border-radius: 50%;
 }
 
 .day:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    background: #e6f0fa;
+    transform: scale(1.1);
 }
 
 .today {
-    background: rgba(255, 255, 255, 0.3);
+    background: #4681f4;
+    color: white;
     border-radius: 50%;
+}
+
+.empty-day {
+    padding: 10px;
 }
