@@ -1,100 +1,91 @@
-document.addEventListener('DOMContentLoaded', function() {
-  let currentDate = new Date();
-  let currentMonth = currentDate.getMonth();
-  let currentYear = currentDate.getFullYear();
+const daysElement = document.getElementById('days');
+const monthYearElement = document.getElementById('monthYear');
+const prevButton = document.getElementById('prev');
+const nextButton = document.getElementById('next');
 
-  const monthYearElement = document.getElementById('monthYear');
-  const daysElement = document.getElementById('days');
-  const prevButton = document.getElementById('prev');
-  const nextButton = document.getElementById('next');
-
-  // Array of month names
-  const monthNames = [
+const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+];
 
-  // Function to render the calendar
-  function renderCalendar() {
-    // Get first day of month and total days in month
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
 
-    // Update month and year in header
-    monthYearElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-    
+function renderCalendar(month, year) {
     // Clear previous days
     daysElement.innerHTML = '';
+    
+    // Update month and year header with clickable dropdown
+    monthYearElement.innerHTML = `
+        <select id="monthSelect">
+            ${months.map((m, index) => 
+                `<option value="${index}" ${index === month ? 'selected' : ''}>${m}</option>`
+            ).join('')}
+        </select>
+        <select id="yearSelect">
+            ${Array.from({length: 2101 - 1970}, (_, i) => 1970 + i).map(y => 
+                `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`
+            ).join('')}
+        </select>
+    `;
 
-    // Create days of previous month
-    for (let i = firstDay - 1; i >= 0; i--) {
-      const dayElement = document.createElement('div');
-      dayElement.className = 'day prev-month';
-      dayElement.textContent = daysInPrevMonth - i;
-      daysElement.appendChild(dayElement);
+    // Event listeners for dropdown changes
+    document.getElementById('monthSelect').addEventListener('change', (e) => {
+        currentMonth = parseInt(e.target.value);
+        renderCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById('yearSelect').addEventListener('change', (e) => {
+        currentYear = parseInt(e.target.value);
+        renderCalendar(currentMonth, currentYear);
+    });
+
+    // Calculate days in month and first day
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Add empty divs for days before the first day
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.classList.add('empty');
+        daysElement.appendChild(emptyDay);
     }
 
-    // Create days of current month
+    // Add days of the month
     for (let i = 1; i <= daysInMonth; i++) {
-      const dayElement = document.createElement('div');
-      dayElement.className = 'day';
-      dayElement.textContent = i;
-      
-      // Highlight current day
-      if (i === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
-        dayElement.classList.add('today');
-      }
-      
-      daysElement.appendChild(dayElement);
-    }
-
-    // Calculate total days shown so far (prev month + current month)
-    const totalDaysShown = firstDay + daysInMonth;
-    // Calculate how many days from next month to show
-    const daysFromNextMonth = 7 - (totalDaysShown % 7);
-    
-    // Only add days from next month if needed to complete the grid
-    if (daysFromNextMonth < 7) {
-      for (let i = 1; i <= daysFromNextMonth; i++) {
         const dayElement = document.createElement('div');
-        dayElement.className = 'day next-month';
         dayElement.textContent = i;
+        
+        // Highlight current date
+        if (i === currentDate.getDate() && 
+            month === currentDate.getMonth() && 
+            year === currentDate.getFullYear()) {
+            dayElement.classList.add('current-day');
+        }
+        
         daysElement.appendChild(dayElement);
-      }
     }
-  }
+}
 
-  // Event listener for month header click
-  monthYearElement.addEventListener('click', function() {
-    // You can customize what happens when clicking the month/year
-    // For example, show a month/year picker or just alert the current month/year
-    alert(`Current view: ${monthNames[currentMonth]} ${currentYear}`);
-    
-    // Alternatively, you could implement a month/year selector here
-    // For a more advanced solution, you might want to create a modal or dropdown
-    // that lets users jump to a specific month and year
-  });
-
-  // Event listeners for previous and next buttons
-  prevButton.addEventListener('click', function() {
+// Navigation button event listeners
+prevButton.addEventListener('click', () => {
     currentMonth--;
     if (currentMonth < 0) {
-      currentMonth = 11;
-      currentYear--;
+        currentMonth = 11;
+        currentYear--;
     }
-    renderCalendar();
-  });
+    renderCalendar(currentMonth, currentYear);
+});
 
-  nextButton.addEventListener('click', function() {
+nextButton.addEventListener('click', () => {
     currentMonth++;
     if (currentMonth > 11) {
-      currentMonth = 0;
-      currentYear++;
+        currentMonth = 0;
+        currentYear++;
     }
-    renderCalendar();
-  });
-
-  // Initial render
-  renderCalendar();
+    renderCalendar(currentMonth, currentYear);
 });
+
+// Initial render
+renderCalendar(currentMonth, currentYear);
