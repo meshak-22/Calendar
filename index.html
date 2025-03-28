@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extraordinary Calendar</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Add favicon -->
     <link rel="icon" type="image/png" href="calendar-icon.png">
 </head>
 <body>
     <div class="calendar-container">
+        <h2>Calendar</h2>
         <div class="calendar-header">
+            <button id="prev-month">&lt;</button>
             <select id="month"></select>
             <select id="year"></select>
+            <button id="next-month">&gt;</button>
         </div>
         <div class="calendar-body" id="calendar">
             <!-- Calendar days will be generated here -->
