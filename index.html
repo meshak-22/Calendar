@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="calendar.png">
-  <link rel="stylesheet" href="style.css">
-  <title>Calendar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extraordinary Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add favicon -->
+    <link rel="icon" type="image/png" href="calendar-icon.png">
 </head>
 <body>
-  <h1>Calendar</h1>
-  <div class="calendar">
-    <div class="calendar-header">
-      <button id="prev">&lt;</button>
-      <h2 id="monthYear">Month Year</h2>
-      <button id="next">&gt;</button>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <select id="month"></select>
+            <select id="year"></select>
+        </div>
+        <div class="calendar-body" id="calendar">
+            <!-- Calendar days will be generated here -->
+        </div>
     </div>
-    <div class="weekdays">
-      <div>Sun</div>
-      <div>Mon</div>
-      <div>Tue</div>
-      <div>Wed</div>
-      <div>Thu</div>
-      <div>Fri</div>
-      <div>Sat</div>
-    </div>
-    <div class="days" id="days"></div>
-  </div>
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
