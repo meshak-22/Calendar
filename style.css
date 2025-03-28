@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap");
+
+body{
+  margin: 0;
+  padding: 0;
+  font-family: "Tektur";
+  background: linear-gradient(to top, black, white, black);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+h1{
+  position: absolute;
+  top: 0;
+  color: white;
+  padding-top: 40px;
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 12px;
+  margin-top: 50px;
+}
+
+.calendar{
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 320px;
+  padding: 20px;
+}
+
+.calendar-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.weekdays, .days{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendar-header button{
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.calendar-header button:hover{
+  background-color: white;
+  color: black;
+  border-radius: 30px;
+}
+
+.prev-date, .next-date{
+    color: #7c7a7a;
+}
+
+.calendar-header h2{
+  margin: 0;
+  font-size: 20px;
+}
+
+.weekdays div, .days div{
+  width: calc(100% / 7);
+  text-align: center;
+  padding: 10px 0;
+  box-sizing: border-box;
+  /* Border for grid effect */
+  border: 1px solid #eee;
+}
+
+.weekdays{
+  background: #efefef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.days div{
+  border: none;
+  margin: 2px 0;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+.days div:hover{
+  background: #e2e2ff;
+  color: black;
+  border-radius: 50%;
+}
+
+.today{
+  background: #3039e2;
+  color: #fff;
+  border-radius: 5px;
+}
