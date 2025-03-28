@@ -1,126 +1,78 @@
 body {
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* New gradient: pink to peach */
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif; /* Changed to Poppins font */
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
 }
 
-.calendar {
-    width: 550px; /* Reduced from 700px to 550px */
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px; /* Slightly reduced padding */
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.calendar-container {
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    animation: float 6s ease-in-out infinite;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 320px;
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px; /* Slightly reduced */
-}
-
-.weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    background: linear-gradient(45deg, #fec1cc, #fff1f1); /* Matching pink gradient */
-    padding: 12px 0; /* Slightly reduced */
-    font-size: 1.2em; /* Slightly smaller */
-    border-radius: 10px;
-    color: #333;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px; /* Slightly reduced */
-}
-
-.days div {
-    padding: 20px; /* Reduced from 25px */
-    border-radius: 12px; /* Slightly smaller */
-    font-size: 1.3em; /* Slightly smaller */
-    background: rgba(255, 255, 255, 0.8);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.days div:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    background: #fff;
-}
-
-.days .empty {
-    background: rgba(245, 245, 245, 0.5);
-    box-shadow: none;
-}
-
-.current-day {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e53); /* Kept this gradient */
-    color: white;
-    border-radius: 12px;
-    transform: scale(1.1);
-}
-
-button {
-    padding: 10px 20px; /* Slightly reduced */
-    font-size: 1.2em; /* Slightly smaller */
-    background: linear-gradient(45deg, #ff758c, #ff7eb3); /* Pink gradient */
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
 }
 
 select {
-    padding: 10px; /* Slightly reduced */
-    font-size: 1.2em; /* Slightly smaller */
+    padding: 8px;
     border: none;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 0 5px;
+}
+
+select option {
+    color: black;
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.day-name {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+.day {
+    text-align: center;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-select:hover {
-    background: #fff;
+.day:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
 }
 
-h1 {
-    text-align: center;
-    color: white;
-    font-size: 2.5em; /* Slightly reduced */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    margin-bottom: 25px; /* Slightly reduced */
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-/* Animations */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); } /* Reduced float distance */
-    100% { transform: translateY(0px); }
-}
-
-@keyframes glow {
-    from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ff9a9e; }
-    to { text-shadow: 0 0 20px #fff, 0 0 30px #fad0c4, 0 0 40px #ff9a9e; }
+.today {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
 }
