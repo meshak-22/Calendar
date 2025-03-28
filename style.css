@@ -1,37 +1,44 @@
 .calendar {
-    width: 300px;
+    width: 600px; /* Doubled from 300px to make it bigger */
     margin: 20px auto;
+    background-color: #f0f8ff; /* Light blue background - you can change this to any color */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px; /* Increased spacing */
 }
 
 .weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    background-color: #f0f0f0;
-    padding: 5px 0;
+    background-color: #e6f0fa; /* Slightly darker shade for weekdays */
+    padding: 10px 0; /* Increased padding */
+    font-size: 1.2em; /* Larger text */
+    border-radius: 5px;
 }
 
 .days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    gap: 2px;
+    gap: 4px; /* Increased gap between days */
 }
 
 .days div {
-    padding: 10px;
-    border: 1px solid #eee;
+    padding: 20px; /* Increased padding for larger day boxes */
+    border: 1px solid #ddd;
+    font-size: 1.2em; /* Larger text */
 }
 
 .days .empty {
-    background-color: #f9f9f9;
+    background-color: #f5faff; /* Lighter shade for empty days */
 }
 
 .current-day {
@@ -41,11 +48,28 @@
 }
 
 button {
-    padding: 5px 10px;
+    padding: 10px 20px; /* Larger buttons */
     cursor: pointer;
+    font-size: 1.2em; /* Larger text */
+    background-color: #4682b4; /* Steel blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #4169e1; /* Royal blue on hover */
 }
 
 select {
-    padding: 5px;
-    margin: 0 5px;
+    padding: 10px; /* Larger dropdowns */
+    margin: 0 10px;
+    font-size: 1.2em; /* Larger text */
+    border-radius: 5px;
+}
+
+h1 {
+    text-align: center;
+    color: #2f4f4f; /* Dark slate gray */
+    font-size: 2em; /* Larger title */
 }
