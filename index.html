@@ -13,25 +13,18 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #d7eaff 0%, #f9fbff 100%);
+    background: linear-gradient(135deg, #A2C4E6 0%, #739DD9 100%);
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 20px;
   }
 
   h1 {
-    color: #2c3e50;
+    color: #fff;
     font-weight: 600;
-    margin: 0;
+    margin-bottom: 10px;
     user-select: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
-
-  .title-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
 
   .calendar {
@@ -84,7 +77,6 @@
     font-family: 'Poppins', sans-serif;
     transition: border-color 0.3s ease;
   }
-
   .month-year select:focus {
     outline: none;
     border-color: #4a90e2;
@@ -159,14 +151,11 @@
     text-align: center;
     font-weight: 600;
   }
+
 </style>
 </head>
 <body>
-  <div class="title-container">
-    <img src="/mnt/data/d9e5ae98-a9df-414c-85ed-d1f6bab38395.png" alt="Calendar Icon" style="width: 32px; height: 32px;" />
-    <h1>Interactive Beautiful Calendar</h1>
-  </div>
-
+  <h1>Calendar</h1>
   <div class="calendar" role="application" aria-label="Calendar">
     <div class="calendar-header">
       <button id="prevMonthBtn" aria-label="Previous Month">&#8592;</button>
@@ -188,9 +177,237 @@
     Select a date
   </div>
 
-<!-- Your script remains unchanged -->
 <script>
-  // ... existing JS script (unchanged from your original code)
+  (function(){
+    const monthYearDiv = document.getElementById('monthYear');
+    const calendarDays = document.getElementById('calendarDays');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+
+    // Store selected date info: year, month, day (null if none)
+    let selectedDate = null;
+
+    function updateSelectedDateDisplay() {
+      if(selectedDate){
+        const {year, month, day} = selectedDate;
+        const dateObj = new Date(year, month, day);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        selectedDateDisplay.textContent = `Selected Date: ${dateObj.toLocaleDateString(undefined, options)}`;
+      } else {
+        selectedDateDisplay.textContent = 'Select a date';
+      }
+    }
+
+    function renderCalendar(year, month) {
+      calendarDays.innerHTML = "";
+      if (!monthYearDiv.dataset.editing) {
+        monthYearDiv.setAttribute('aria-expanded', 'false');
+        monthYearDiv.textContent = months[month] + " " + year;
+      }
+
+      // First day of the month (0-6: Sun-Sat)
+      let firstDay = new Date(year, month, 1).getDay();
+      // Days in current month
+      let daysInMonth = new Date(year, month + 1, 0).getDate();
+      // Days in previous month
+      let daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      // Fill in days from previous month to align
+      for(let i = firstDay - 1; i >= 0; i--) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day', 'disabled');
+        dayElem.setAttribute('aria-disabled', 'true');
+        dayElem.textContent = daysInPrevMonth - i;
+        calendarDays.appendChild(dayElem);
+      }
+
+      // Fill current month days
+      for(let i = 1; i <= daysInMonth; i++) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day');
+        dayElem.setAttribute('tabindex', '0');
+        dayElem.setAttribute('role', 'gridcell');
+        dayElem.setAttribute('aria-label', `${months[month]} ${i}, ${year}`);
+
+        // Highlight today
+        if(i === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+          dayElem.classList.add('today');
+          dayElem.setAttribute('aria-current', 'date');
+        }
+
+        // Highlight selected date if matches
+        if(selectedDate && selectedDate.year === year && selectedDate.month === month && selectedDate.day === i) {
+          dayElem.classList.add('selected');
+          dayElem.setAttribute('aria-selected', 'true');
+        } else {
+          dayElem.setAttribute('aria-selected', 'false');
+        }
+
+        dayElem.textContent = i;
+
+        // Click to select date
+        dayElem.addEventListener('click', () => {
+          selectedDate = { year, month, day: i };
+          updateSelectedDateDisplay();
+          renderCalendar(currentYear, currentMonth);
+        });
+
+        // Keyboard accessibility: Enter or Space select date
+        dayElem.addEventListener('keydown', e => {
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            dayElem.click();
+            dayElem.focus();
+          }
+        });
+
+        calendarDays.appendChild(dayElem);
+      }
+
+      // Fill days from next month to complete grid (if needed)
+      let totalCells = firstDay + daysInMonth;
+      let nextDays = 0;
+      if(totalCells % 7 !== 0) {
+        nextDays = 7 - (totalCells % 7);
+      }
+      for(let i = 1; i <= nextDays; i++) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day', 'disabled');
+        dayElem.setAttribute('aria-disabled', 'true');
+        dayElem.textContent = i;
+        calendarDays.appendChild(dayElem);
+      }
+    }
+
+    function createPicker() {
+      monthYearDiv.dataset.editing = "true";
+      monthYearDiv.setAttribute('aria-expanded', 'true');
+      monthYearDiv.innerHTML = "";
+
+      // Create month select
+      const monthSelect = document.createElement('select');
+      monthSelect.setAttribute('aria-label', 'Select month');
+      months.forEach((m, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = m;
+        if(idx === currentMonth) option.selected = true;
+        monthSelect.appendChild(option);
+      });
+
+      // Create year select
+      const yearSelect = document.createElement('select');
+      yearSelect.setAttribute('aria-label', 'Select year');
+      const startYear = 1900;
+      const endYear = 2100;
+      for(let y = startYear; y <= endYear; y++){
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        if(y === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+
+      monthYearDiv.appendChild(monthSelect);
+      monthYearDiv.appendChild(yearSelect);
+
+      // When selection changes, update calendar
+      function onChange() {
+        const selectedMonth = parseInt(monthSelect.value);
+        const selectedYear = parseInt(yearSelect.value);
+        currentMonth = selectedMonth;
+        currentYear = selectedYear;
+
+        // If selected date is outside new month/year, clear selection
+        if(selectedDate){
+          if(selectedDate.year !== currentYear || selectedDate.month !== currentMonth){
+            selectedDate = null;
+            updateSelectedDateDisplay();
+          }
+        }
+
+        monthYearDiv.dataset.editing = "";
+        monthYearDiv.setAttribute('aria-expanded', 'false');
+        renderCalendar(currentYear, currentMonth);
+        // Restore text view after small delay to allow dropdown closing smoothly
+        setTimeout(() => {
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          monthYearDiv.focus();
+        }, 0);
+      }
+
+      monthSelect.addEventListener('change', onChange);
+      yearSelect.addEventListener('change', onChange);
+
+      // Clicking outside or pressing Escape closes picker reverting to text display
+      function closePickerOnClickOutside(event) {
+        if (!monthYearDiv.contains(event.target)) {
+          monthYearDiv.dataset.editing = "";
+          monthYearDiv.setAttribute('aria-expanded', 'false');
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          document.removeEventListener('click', closePickerOnClickOutside);
+          document.removeEventListener('keydown', closeOnEscape);
+          monthYearDiv.focus();
+        }
+      }
+      function closeOnEscape(event){
+        if(event.key === "Escape"){
+          monthYearDiv.dataset.editing = "";
+          monthYearDiv.setAttribute('aria-expanded', 'false');
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          document.removeEventListener('click', closePickerOnClickOutside);
+          document.removeEventListener('keydown', closeOnEscape);
+          monthYearDiv.focus();
+        }
+      }
+      document.addEventListener('click', closePickerOnClickOutside);
+      document.addEventListener('keydown', closeOnEscape);
+    }
+
+    monthYearDiv.addEventListener('click', () => {
+      if (monthYearDiv.dataset.editing) return; // Already editing
+      createPicker();
+    });
+
+    monthYearDiv.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        if (!monthYearDiv.dataset.editing) createPicker();
+      }
+    });
+
+    prevMonthBtn.addEventListener('click', () => {
+      currentMonth--;
+      if(currentMonth < 0){
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentYear, currentMonth);
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+      currentMonth++;
+      if(currentMonth > 11){
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentYear, currentMonth);
+    });
+
+    updateSelectedDateDisplay();
+    renderCalendar(currentYear, currentMonth);
+  })();
 </script>
 </body>
 </html>
+
