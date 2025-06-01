@@ -1,25 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extraordinary Calendar</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="calendar-icon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Beautiful Simple Calendar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #d7eaff 0%, #f9fbff 100%);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 10px;
+    user-select: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .calendar {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    width: 350px;
+    padding: 20px;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .calendar-header button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #4a90e2;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    user-select: none;
+  }
+
+  .calendar-header button:hover {
+    color: #305cad;
+  }
+
+  .month-year {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333333;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .month-year select {
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease;
+  }
+  .month-year select:focus {
+    outline: none;
+    border-color: #4a90e2;
+  }
+
+  .days-of-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 600;
+    color: #777777;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    user-select: none;
+  }
+
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding-top: 10px;
+  }
+
+  .day {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    cursor: pointer;
+    color: #555555;
+    font-weight: 500;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.15s ease;
+  }
+
+  .day:hover:not(.disabled) {
+    background-color: #e1eaff;
+    color: #305cad;
+    transform: scale(1.1);
+  }
+
+  .day.disabled {
+    color: #cccccc;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .day.today {
+    background-color: #4a90e2;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .day.selected {
+    background-color: #2f69c2;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 8px #2f69c2;
+  }
+
+  .selected-date-display {
+    width: 350px;
+    margin-top: 15px;
+    background: white;
+    border-radius: 15px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 1.1rem;
+    color: #333;
+    user-select: none;
+    text-align: center;
+    font-weight: 600;
+  }
+
+</style>
 </head>
 <body>
-    <div class="calendar-container">
-        <h2>Calendar</h2>
-        <div class="calendar-header">
-            <button id="prev-month">&lt;</button>
-            <select id="month"></select>
-            <select id="year"></select>
-            <button id="next-month">&gt;</button>
-        </div>
-        <div class="calendar-body" id="calendar">
-            <!-- Calendar days will be generated here -->
-        </div>
+  <h1>Interactive Beautiful Calendar</h1>
+  <div class="calendar" role="application" aria-label="Calendar">
+    <div class="calendar-header">
+      <button id="prevMonthBtn" aria-label="Previous Month">&#8592;</button>
+      <div class="month-year" id="monthYear" tabindex="0" role="button" aria-haspopup="listbox" aria-expanded="false"></div>
+      <button id="nextMonthBtn" aria-label="Next Month">&#8594;</button>
     </div>
-    <script src="script.js"></script>
+    <div class="days-of-week" aria-hidden="true">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+    </div>
+    <div class="calendar-days" id="calendarDays" role="grid" aria-labelledby="monthYear"></div>
+  </div>
+  <div class="selected-date-display" id="selectedDateDisplay" aria-live="polite" aria-atomic="true">
+    Select a date
+  </div>
+
+<script>
+  (function(){
+    const monthYearDiv = document.getElementById('monthYear');
+    const calendarDays = document.getElementById('calendarDays');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+
+    // Store selected date info: year, month, day (null if none)
+    let selectedDate = null;
+
+    function updateSelectedDateDisplay() {
+      if(selectedDate){
+        const {year, month, day} = selectedDate;
+        const dateObj = new Date(year, month, day);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        selectedDateDisplay.textContent = `Selected Date: ${dateObj.toLocaleDateString(undefined, options)}`;
+      } else {
+        selectedDateDisplay.textContent = 'Select a date';
+      }
+    }
+
+    function renderCalendar(year, month) {
+      calendarDays.innerHTML = "";
+      if (!monthYearDiv.dataset.editing) {
+        monthYearDiv.setAttribute('aria-expanded', 'false');
+        monthYearDiv.textContent = months[month] + " " + year;
+      }
+
+      // First day of the month (0-6: Sun-Sat)
+      let firstDay = new Date(year, month, 1).getDay();
+      // Days in current month
+      let daysInMonth = new Date(year, month + 1, 0).getDate();
+      // Days in previous month
+      let daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      // Fill in days from previous month to align
+      for(let i = firstDay - 1; i >= 0; i--) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day', 'disabled');
+        dayElem.setAttribute('aria-disabled', 'true');
+        dayElem.textContent = daysInPrevMonth - i;
+        calendarDays.appendChild(dayElem);
+      }
+
+      // Fill current month days
+      for(let i = 1; i <= daysInMonth; i++) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day');
+        dayElem.setAttribute('tabindex', '0');
+        dayElem.setAttribute('role', 'gridcell');
+        dayElem.setAttribute('aria-label', `${months[month]} ${i}, ${year}`);
+
+        // Highlight today
+        if(i === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+          dayElem.classList.add('today');
+          dayElem.setAttribute('aria-current', 'date');
+        }
+
+        // Highlight selected date if matches
+        if(selectedDate && selectedDate.year === year && selectedDate.month === month && selectedDate.day === i) {
+          dayElem.classList.add('selected');
+          dayElem.setAttribute('aria-selected', 'true');
+        } else {
+          dayElem.setAttribute('aria-selected', 'false');
+        }
+
+        dayElem.textContent = i;
+
+        // Click to select date
+        dayElem.addEventListener('click', () => {
+          selectedDate = { year, month, day: i };
+          updateSelectedDateDisplay();
+          renderCalendar(currentYear, currentMonth);
+        });
+
+        // Keyboard accessibility: Enter or Space select date
+        dayElem.addEventListener('keydown', e => {
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            dayElem.click();
+            dayElem.focus();
+          }
+        });
+
+        calendarDays.appendChild(dayElem);
+      }
+
+      // Fill days from next month to complete grid (if needed)
+      let totalCells = firstDay + daysInMonth;
+      let nextDays = 0;
+      if(totalCells % 7 !== 0) {
+        nextDays = 7 - (totalCells % 7);
+      }
+      for(let i = 1; i <= nextDays; i++) {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('day', 'disabled');
+        dayElem.setAttribute('aria-disabled', 'true');
+        dayElem.textContent = i;
+        calendarDays.appendChild(dayElem);
+      }
+    }
+
+    function createPicker() {
+      monthYearDiv.dataset.editing = "true";
+      monthYearDiv.setAttribute('aria-expanded', 'true');
+      monthYearDiv.innerHTML = "";
+
+      // Create month select
+      const monthSelect = document.createElement('select');
+      monthSelect.setAttribute('aria-label', 'Select month');
+      months.forEach((m, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = m;
+        if(idx === currentMonth) option.selected = true;
+        monthSelect.appendChild(option);
+      });
+
+      // Create year select
+      const yearSelect = document.createElement('select');
+      yearSelect.setAttribute('aria-label', 'Select year');
+      const startYear = 1900;
+      const endYear = 2100;
+      for(let y = startYear; y <= endYear; y++){
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        if(y === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+
+      monthYearDiv.appendChild(monthSelect);
+      monthYearDiv.appendChild(yearSelect);
+
+      // When selection changes, update calendar
+      function onChange() {
+        const selectedMonth = parseInt(monthSelect.value);
+        const selectedYear = parseInt(yearSelect.value);
+        currentMonth = selectedMonth;
+        currentYear = selectedYear;
+
+        // If selected date is outside new month/year, clear selection
+        if(selectedDate){
+          if(selectedDate.year !== currentYear || selectedDate.month !== currentMonth){
+            selectedDate = null;
+            updateSelectedDateDisplay();
+          }
+        }
+
+        monthYearDiv.dataset.editing = "";
+        monthYearDiv.setAttribute('aria-expanded', 'false');
+        renderCalendar(currentYear, currentMonth);
+        // Restore text view after small delay to allow dropdown closing smoothly
+        setTimeout(() => {
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          monthYearDiv.focus();
+        }, 0);
+      }
+
+      monthSelect.addEventListener('change', onChange);
+      yearSelect.addEventListener('change', onChange);
+
+      // Clicking outside or pressing Escape closes picker reverting to text display
+      function closePickerOnClickOutside(event) {
+        if (!monthYearDiv.contains(event.target)) {
+          monthYearDiv.dataset.editing = "";
+          monthYearDiv.setAttribute('aria-expanded', 'false');
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          document.removeEventListener('click', closePickerOnClickOutside);
+          document.removeEventListener('keydown', closeOnEscape);
+          monthYearDiv.focus();
+        }
+      }
+      function closeOnEscape(event){
+        if(event.key === "Escape"){
+          monthYearDiv.dataset.editing = "";
+          monthYearDiv.setAttribute('aria-expanded', 'false');
+          monthYearDiv.textContent = months[currentMonth] + " " + currentYear;
+          document.removeEventListener('click', closePickerOnClickOutside);
+          document.removeEventListener('keydown', closeOnEscape);
+          monthYearDiv.focus();
+        }
+      }
+      document.addEventListener('click', closePickerOnClickOutside);
+      document.addEventListener('keydown', closeOnEscape);
+    }
+
+    monthYearDiv.addEventListener('click', () => {
+      if (monthYearDiv.dataset.editing) return; // Already editing
+      createPicker();
+    });
+
+    monthYearDiv.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        if (!monthYearDiv.dataset.editing) createPicker();
+      }
+    });
+
+    prevMonthBtn.addEventListener('click', () => {
+      currentMonth--;
+      if(currentMonth < 0){
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentYear, currentMonth);
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+      currentMonth++;
+      if(currentMonth > 11){
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentYear, currentMonth);
+    });
+
+    updateSelectedDateDisplay();
+    renderCalendar(currentYear, currentMonth);
+  })();
+</script>
 </body>
 </html>
